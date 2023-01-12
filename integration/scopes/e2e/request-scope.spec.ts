@@ -16,10 +16,11 @@ class Meta {
   }
 }
 
-describe('Request scope', () => {
+describe.only('Request scope', () => {
   let server;
   let app: INestApplication;
 
+  const MY_WORLD_TYPE = 'FELINE';
   before(async () => {
     const module = await Test.createTestingModule({
       imports: [
@@ -33,6 +34,21 @@ describe('Request scope', () => {
     app = module.createNestApplication();
     server = app.getHttpServer();
     await app.init();
+  });
+
+  describe('Get REQUEST injected', () => {
+    it.only(`should get all injected request objects`, async () => {
+      const performHttpCall = end =>
+        request(server)
+          .get('/hello/worldtype')
+          .set('x-my-world-type', MY_WORLD_TYPE)
+          .end((err, res) => {
+            if (err) return end(err);
+            end(res.text);
+          });
+      const worldType = await new Promise(resolve => performHttpCall(resolve));
+      expect(worldType).to.equal(MY_WORLD_TYPE);
+    });
   });
 
   describe('when one service is request scoped', () => {
