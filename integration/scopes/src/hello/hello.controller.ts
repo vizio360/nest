@@ -27,4 +27,9 @@ export class HelloController {
   greeting(@Param('id', UserByIdPipe) id): string {
     return this.helloService.greeting();
   }
+
+  @Get('worldtype')
+  worldType(): string {
+    return this.helloService.getWorldType();
+  }
 }
